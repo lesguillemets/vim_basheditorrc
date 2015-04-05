@@ -1,0 +1,143 @@
+" vim:fileencoding=utf-8 ts=4 sts=4 sw=4 ft=vim
+" usage :
+" $ ln -s [this file] ~/.vim_basheditorrc
+" $ export EDITOR="vim -N -u ~/.vim_basheditorrc"
+
+" settings {{{
+set number
+syntax on
+filetype plugin on
+filetype indent on
+set smartindent
+set smarttab
+set tabstop=4 softtabstop=4 shiftwidth=4
+set expandtab
+set ignorecase smartcase
+set hlsearch incsearch
+set ruler
+set title
+set number
+set showcmd
+set showmode  " tells us which mode we're in.
+set showtabline=1
+set laststatus=2 " always show
+set backspace=
+set synmaxcol=200
+set tildeop
+set cursorline
+set nocursorcolumn
+set splitbelow splitright
+set nostartofline
+set helplang=en
+set wildmode=longest,list,full
+set wildmenu
+set matchpairs=(:),{:},[:]
+set list
+set listchars=tab:>-
+set t_Co=256
+set modeline
+set lazyredraw
+set timeout timeoutlen=1000 ttimeoutlen=10
+augroup MyCmds
+    autocmd!
+    autocmd FileType sh badd ~/.bash_history
+augroup END
+" }}}
+
+" appearance {{{
+augroup myappearance
+    autocmd!
+    autocmd ColorScheme * hi ExtraWhiteSpace ctermbg=darkgrey guibg=lightgreen
+    autocmd ColorScheme * hi ZenkakuSpace ctermbg=white guibg=white
+    autocmd VimEnter,WinEnter,Bufread * call s:syntax_additional()
+augroup END
+function! s:syntax_additional()
+    let preset = exists('w:syntax_additional')
+    if &l:list
+        if !preset
+            " http://vimwiki.net/?faq%2F4
+            let w:syntax_additional = [
+            \ matchadd('ZenkakuSpace', '　',0),
+            \ matchadd('ExtraWhiteSpace', '\S\+\zs\s\+\ze$',0),
+            \ ]
+        endif
+    elseif preset
+        for added in w:syntax_additional
+            call matchdelete(added)
+        endfor
+        unlet added
+        unlet w:syntax_additional
+    endif
+endfunction
+
+let g:jellybeans_background_color_256 = 'NONE'
+colorscheme jellybeans
+" adopted from thinca's vimrc
+hi VertSplit ctermfg=144 ctermbg=NONE
+hi Visual term=reverse ctermbg=30
+hi CursorLine cterm=NONE ctermbg=235
+hi StatusLine cterm=bold ctermbg=235 ctermfg=7
+hi StatusLineNC cterm=bold ctermbg=black ctermfg=22
+hi ColorColumn ctermbg=237
+set statusline=[%n]\ %m\ %y\ %<[%{fnamemodify(getcwd(),':~')}]\ %=L[%2.l/%2.L]\ C[%2.c]%5P
+" }}}
+
+" mappings {{{
+nnoremap <silent> <Esc><Esc> :nohlsearch<CR>
+nnoremap Y y$
+nnoremap * *N
+" comments with # don't remove indentations
+inoremap # X<C-h>#
+
+" when in command line, it feels a little like we're in shell..
+cnoremap <C-a> <Home>
+cnoremap <C-k> <End><C-u>
+" but let's keep handy digraph
+cnoremap <C-g> <C-k>
+
+" 'stronger' h and l.
+nnoremap <C-h> ^
+vnoremap <C-h> ^
+nnoremap <C-l> $
+vnoremap <C-l> $
+
+" Paste and fix indentation.
+" cf: github:gregstallings/vimfiles/vimrc
+nnoremap <Leader>p p`[v`]=
+nnoremap <Leader>P P`[v`]=
+
+" let vim ignore mousewheel
+" cf. http://vim.1045645.n5.nabble.com/disable-the-mouse-wheel-td1166386.html
+noremap <Up> <Nop>
+noremap <Down> <Nop>
+inoremap <Up> <Nop>
+inoremap <Down> <Nop>
+noremap <Left> <Nop>
+noremap <Right> <Nop>
+inoremap <Left> <Nop>
+inoremap <Right> <Nop>
+
+" current line at the top - but not the very top
+nnoremap zt zt2<C-y>
+nnoremap zT zt
+nnoremap zb zb2<C-e>
+nnoremap zB zb
+
+" from reading_vimrc #128, by Songmu
+nnoremap <C-e> <C-e>j
+nnoremap <C-y> <C-y>k
+
+" activate shell keeping vim visible.
+" http://mattn.kaoriya.net/software/vim/20070510122133.htm
+nnoremap <silent> gsh :set t_te= t_ti= <CR>:sh<CR>:set t_te& t_ti&<CR>
+
+" from: vim-reading #94,
+" github:gcmt/dotfiles/vim/.vimrc (@2afa347)
+" selects the current line without indentation
+nnoremap vv ^vg_
+
+" stop NUL key from misbehaving
+inoremap <C-@> <Nop>
+" }}}
+
+setfiletype sh
